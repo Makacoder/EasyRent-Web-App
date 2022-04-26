@@ -28,6 +28,10 @@ const UserSchema = new User(
       type: String,
       default: "User",
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -1,14 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const router = require("./src/routes/user.route")
-
+const router = require("./src/routes/user.route");
 
 const dotenv = require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT;
 
 app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
 
 const connectDB = async () => {
   try {
@@ -33,7 +33,4 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1", router);
 
-
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+module.exports = app;

@@ -53,6 +53,6 @@ const UserLogin = Joi.object({
 module.exports = {
   validateRegister,
   validateLogin,
-  validiateUser,
-  UserLogin,
+  //validiateUser,
+  //UserLogin,
 };
