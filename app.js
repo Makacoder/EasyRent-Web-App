@@ -22,7 +22,13 @@ const connectDB = async () => {
     console.log("Not connected");
   }
 };
-
+// set up session cookies
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: [keys.session.cookie_key],
+  })
+);
 connectDB();
 
 app.get("/", (req, res) => {

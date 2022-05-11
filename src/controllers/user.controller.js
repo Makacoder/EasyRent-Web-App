@@ -2,8 +2,13 @@ const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/sendMail");
+//const cookie = require("cookie-session");
 require("dotenv").config();
-const {validateRegister, validateLogin} = require('../middleware/validation.middleware')
+const {
+  validateRegister,
+  validateLogin,
+} = require("../middleware/validation.middleware");
+const cookieSession = require("cookie-session");
 const { rent_Token } = process.env;
 
 // New users sign up on the platform
@@ -113,7 +118,7 @@ exports.fetchAllUsers = async (req, res, next) => {
 
 exports.verifyEmail = async (req, res, next) => {
   try {
-    const { token } = req.headers;
+    const { token } = req.query;
     const secret_key = process.env.rent_Token;
     const decodedToken = await jwt.verify(token, secret_key);
     const user = await User.findOne({ email: decodedToken.email }).select(
@@ -240,7 +245,7 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
-exports.changePassword = async (req, res, next) => {
+exports.updatePassword = async (req, res, next) => {
   try {
     const { oldPassword, newPassword, confirmPassword } = req.body;
     const { email } = req.query;
@@ -249,7 +254,10 @@ exports.changePassword = async (req, res, next) => {
       req.headers.authorization.split(" ")[1],
       process.env.rent_Token
     ).email;
+
     const loggedUser = await User.findOne({ email });
+    console.log(loggedUser.password);
+    console.log("this is " + oldPassword);
     if (!loggedUser) {
       return res.status(403).json({
         message: `Forbidden`,
@@ -262,29 +270,100 @@ exports.changePassword = async (req, res, next) => {
     }
     const passwordMatch = await bcrypt.compare(
       oldPassword,
-      loggedUser.password
+      loggedUser[0][0].password
     );
+
     if (!passwordMatch) {
       return res.status(400).json({
-        message: `Old Password is not correct`,
+        message: "old Password is not correct.",
       });
     }
+
     if (newPassword !== confirmPassword) {
       return res.status(400).json({
-        message: `Password do not match.`,
+        message: "Password do not match.",
       });
     }
+
     const hashPassword = await bcrypt.hash(confirmPassword, 10);
-    const resetPassword = await User.updateOne(
-      { email },
-      { password: hashPassword }
-    );
+    console.log(confirmPassword);
+    await User.updateOne({ email }, { password: hashPassword });
     return res.status(200).json({
       message: `Password has been updated successfully.`,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       message: `${error.message}, Please Try agin later.`,
     });
   }
+};
+// exports.changePassword = async (req, res, next) => {
+//   try {
+//     const { oldPassword, newPassword, confirmPassword } = req.body;
+//     console.log(req.body)
+//     console.log(req.body.confirmPassword);
+//     const { email } = req.query;
+
+// const headerTokenEmail = await jwt.verify(
+//   req.headers.authorization.split(" ")[1],
+//   process.env.rent_Token
+// ).email;
+// console.log(headerTokenEmail);
+//const loggedUser = await User.findOne({ email });
+// console.log(loggedUser.password);
+// console.log("this is " + oldPassword);
+// if (!loggedUser) {
+//   return res.status(403).json({
+//     message: `Forbidden`,
+//   });
+// }
+// if (headerTokenEmail !== loggedUser.email) {
+//   return res.status(403).json({
+//     message: `Forbidden`,
+//   });
+// }
+// const passwordMatch = await bcrypt.compare(
+//   oldPassword,
+//   loggedUser.password
+// );
+// console.log("this is " + oldPassword);
+// console.log("=== " + loggedUser.password);
+//     if (!passwordMatch) {
+//       return res.status(400).json({
+//         message: `Old Password is not correct`,
+//       });
+//     }
+//     if (newPassword !== confirmPassword) {
+//       return res.status(400).json({
+//         message: `Password do not match.`,
+//       });
+//     }
+//     const hashPassword = await bcrypt.hash(confirmPassword, 10);
+//     console.log(confirmPassword);
+//     const resetPassword = await User.updateOne(
+//       { email },
+//       { password: hashPassword }
+//     );
+//     return res.status(200).json({
+//       message: `Password has been updated successfully.`,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       message: `${error.message}, Please Try agin later.`,
+//     });
+//   }
+// };
+
+// Logout User
+exports.logout = (req, res) => {
+  res.cookie("jwt", "logout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  return res.status(200).json({
+    message: `User logged out successfully.`,
+  });
 };

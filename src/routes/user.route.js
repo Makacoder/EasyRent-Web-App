@@ -9,11 +9,14 @@ router.post("/registerUser", User.register);
 router.post("/loginUser", User.login);
 //fetch users path
 router.get("/viewAllUser", authorize, User.fetchAllUsers);
+//users logout path
+router.get("/logoutUser", User.logout);
+
 //all bookmark services path
 
 router.post("/auth/user/verify", User.verifyEmail);
 router.post("/auth/user/resend-verification-mail", User.resendVerificationMail);
 router.post("/auth/user/password-reset-url", User.forgetPasswordLink);
-router.patch("/auth/user/change-password", User.changePassword);
+router.patch("/auth/user/update-password", User.updatePassword);
 router.patch("/auth/user/reset-password", User.resetPassword);
 module.exports = router;

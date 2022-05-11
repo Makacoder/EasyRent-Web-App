@@ -6,7 +6,7 @@ This web app is to serve as a bridge between seekers of apratments to rent and t
 
 We want to accomplish a situation where seekers can be like "oh wow, these guys made this extremely easy to find great apartments with no agent fees and no stress.
 
-We strongly value excellence in terms of apartment search, navigation and user experience on the app platform and our sole mission is just to curb people going through stress of agents and yet still paying high fees. 
+We strongly value excellence in terms of apartment search, navigation and user experience on the app platform and our sole mission is just to curb people going through stress of agents and yet still paying high fees.
 
 ## Building and creating endpoints for Easy Rent web app
 
@@ -25,12 +25,15 @@ We strongly value excellence in terms of apartment search, navigation and user e
 13. House verification
 
 ### Postman Documentation
-[Easy Rent web app] https://documenter.getpostman.com/view/19468470/UVz1MBxQ
+
+[Easy Rent web app] https://documenter.getpostman.com/view/19468470/UyrDCuwF
 
 ### Heroku Documentation
+
 https://dashboard.heroku.com/apps/vast-headland-56568
 
 #### Developer Documentation
+
 This app is developed by a group of Grazac Academy interns as detailed below:
 
 Ibrahim ilori - Backend developer
