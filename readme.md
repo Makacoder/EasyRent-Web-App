@@ -47,4 +47,4 @@ Oyesola Oloyede - Product designer
 Christain Ugoh - Product designer
 Oluwapelumi David - Product designer
 
-Project Manager - Deborah Dada
+Project Manager - Debby Dada
