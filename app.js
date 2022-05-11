@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = require("./src/routes/user.route");
+const cookieSession = require("cookie-session");
+const keys = require('./src/utils/keys')
 
 const dotenv = require("dotenv").config();
 
@@ -29,6 +31,7 @@ app.use(
     keys: [keys.session.cookie_key],
   })
 );
+
 connectDB();
 
 app.get("/", (req, res) => {

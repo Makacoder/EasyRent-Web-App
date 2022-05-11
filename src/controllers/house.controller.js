@@ -7,13 +7,13 @@ const AppError = require("../utils/appError");
 exports.addHouse = async (req, res, next) => {
   try {
     const { location, category, price, bedroomType } = req.body;
-    const {filename} = req.file;
+    const { filename } = req.file;
     if (!location || !filename || !category || !price) {
       return next(new AppError("Please fill the required field", 401));
     }
     const newHouse = await House.create({
       location,
-      houseImage:filename,
+      houseImage: filename,
       category,
       price,
       bedroomType,
@@ -72,9 +72,8 @@ exports.viewCategory = async (req, res, next) => {
   }
 };
 
-
 // viewing the details of all registered houses
-exports.fetchHouse= async (req, res, next) => {
+exports.fetchHouse = async (req, res, next) => {
   try {
     const viewHouse = await House.find();
     return successResMsg(res, 200, {
@@ -82,10 +81,9 @@ exports.fetchHouse= async (req, res, next) => {
       viewHouse,
     });
   } catch (error) {
-    return errorResMsg(res, 500, { message: error.message }); 
+    return errorResMsg(res, 500, { message: error.message });
   }
 };
-
 
 // viewing all bedroomType results
 exports.viewBedroomType = async (req, res, next) => {
@@ -114,5 +112,7 @@ exports.addhouseimage = async (req, res, next) => {
       urls.push(newPath);
     }
     images = urls.map((url) => url.res);
-
-  
+  } catch (error) {
+    return errorResMsg(res, 500, { message: error.message });
+  }
+};

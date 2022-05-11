@@ -2,13 +2,12 @@ const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/sendMail");
-//const cookie = require("cookie-session");
 require("dotenv").config();
 const {
   validateRegister,
   validateLogin,
 } = require("../middleware/validation.middleware");
-const cookieSession = require("cookie-session");
+
 const { rent_Token } = process.env;
 
 // New users sign up on the platform
