@@ -30,7 +30,7 @@ We strongly value excellence in terms of apartment search, navigation and user e
 
 ### Heroku Documentation
 
-https://dashboard.heroku.com/apps/vast-headland-56568
+https://murmuring-caverns-19178.herokuapp.com/
 
 #### Developer Documentation
 
