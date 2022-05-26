@@ -1,23 +1,28 @@
 const Admin = require("../models/admin.model");
 const bcrypt = require("bcrypt");
-const User = require("../models/user.model");
+//const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
-const House = require("../models/house.model");
+//const House = require("../models/house.model");
 require("dotenv").config();
 
-const { rail_Token } = process.env;
+const {
+  validateAdminReg,
+  validateAdminLog,
+} = require("../middleware/validation.middleware");
+
+const { rent_Token } = process.env;
 // Register an Admin
 exports.register = async (req, res, next) => {
   try {
     const { firstName, lastName, phoneNumber, email, password, role } =
       req.body;
-
-    //if (!firstName || !lastName || !phoneNumber || !email || !password) {
-    //   return res.status(401).json({
-    //     success: false,
-    //     message: "kindly fill the required field",
-    //   });
-    // }
+await validateAdminReg.validateAsync(req.body);
+    if (!firstName || !lastName || !phoneNumber || !email || !password) {
+      return res.status(401).json({
+        success: false,
+        message: "kindly fill the required field",
+      });
+    }
 
     const emailExists = await Admin.findOne({ email });
     if (emailExists) {
@@ -39,7 +44,7 @@ exports.register = async (req, res, next) => {
       email: newAdmin.email,
       role: newAdmin.role,
     };
-    const token = await jwt.sign(payload, process.env.rail_Token, {
+    const token = await jwt.sign(payload, process.env.rent_Token, {
       expiresIn: "2h",
     });
 
@@ -58,6 +63,7 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    await validateAdminLog.validateAsync(req.body);
     const emailExist = await Admin.findOne({ email });
     if (!emailExist) {
       return res.status(401).json({
@@ -77,7 +83,7 @@ exports.login = async (req, res, next) => {
       email: emailExist.email,
       role: emailExist.role,
     };
-    const token = await jwt.sign(data, rail_Token, { expiresIn: "2h" });
+    const token = await jwt.sign(data, rent_Token, { expiresIn: "2h" });
 
     return res.status(200).json({
       success: true,
@@ -106,16 +112,16 @@ exports.getAllUsers = async (req, res, next) => {
 //uploading new houses for users to post
 exports.uploadHouse = async (req, res, next) => {
   try {
-    const { state, area, time, date } = req.body;
-    if (!state || !area || !time || !date)
+    const { state, area, type, date } = req.body;
+    if (!state || !area || !type || !date)
       return res.status(400).json({
         message: "please fill the required fields",
       });
 
-    const uploads = new House({
+    const uploads = newHouse({
       state,
       area,
-      time,
+      type,
       date,
     });
     return res.status(201).json({

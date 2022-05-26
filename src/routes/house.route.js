@@ -1,29 +1,23 @@
 const express = require("express");
-const {
-  addHouse,
-  updateHouseInfo,
-  searchForHouse,
-  viewCategory,
-  fetchHouse,
-  viewBedroomType,
-} = require("../controllers/house.controller");
-const { authorize, iAmAdmin } = require("../middlewares/auth.middleware");
-const upload = require("../middlewares/upload");
+const House = require("../controllers/house.controller");
+const authorize = require("../middleware/auth.middleware");
+const isAdmin = require("../middleware/auth.middleware");
 
 const router = express.Router();
-
+ 
 router.post(
   "/newHouse",
-  authorize,
-  iAmAdmin,
-  upload.single("aptImage"),
-  house.addHouse
+  // authorize,
+  // isAdmin,
+  House.addHouse
+  // upload.single("aptImage"),
 );
-router.patch("/updatehouse", house.updateHouseInfo);
-router.get("/searchhouse", house.searchForHouse);
-router.get("/view-category/:category", house.viewCategory);
-router.get("/viewHouse", house.fetchHouse);
-router.get("/bedroomType/:bedroom", house.viewBedroomType);
-// router.post("/addhouse", authorize, iAmAdmin, addHouse);
+router.post("/addhouse", House.addHouse);
+router.patch("/updateHouse", House.updateHouseInfo);
+router.get("/searchHouse", House.searchForHouse);
+router.get("/view-category/:category", House.viewCategory);
+router.get("/viewHouse", House.fetchHouse);
+router.get("/bedroomType/:bedroom", House.viewBedroomType);
+
 
 module.exports = router;

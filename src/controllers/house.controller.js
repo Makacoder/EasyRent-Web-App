@@ -2,12 +2,13 @@ const House = require("../models/house.model");
 const cloudinaryUploadMethod = require("../utils/cloudinary");
 const { successResMsg, errorResMsg } = require("../utils/appResponse");
 const AppError = require("../utils/appError");
+require("dotenv").config();
 
 //creating data for houses
 exports.addHouse = async (req, res, next) => {
   try {
     const { location, category, price, bedroomType } = req.body;
-    const { filename } = req.file;
+    const filename = req.file;
     if (!location || !filename || !category || !price) {
       return next(new AppError("Please fill the required field", 401));
     }
@@ -31,15 +32,14 @@ exports.addHouse = async (req, res, next) => {
 exports.updateHouseInfo = async (req, res, next) => {
   try {
     const { _id } = req.params;
-    const HouseUpdate = await House.findOneAndUpdate({ _id: _id }, req.body, {
+    const houseUpdated = await House.findOneAndUpdate({ _id: _id }, req.body, {
       new: true,
     });
     return successResMsg(res, 200, {
       message: "success",
-      houseIsUpdated,
+      houseUpdated,
     });
   } catch (error) {
-    console.log(error);
     return errorResMsg(res, 500, { message: error.message });
   }
 };
@@ -88,11 +88,11 @@ exports.fetchHouse = async (req, res, next) => {
 // viewing all bedroomType results
 exports.viewBedroomType = async (req, res, next) => {
   try {
-    const { bedroom } = req.params;
-    const bedroomType = await House.find({ bedroom });
+    const { bedroomType } = req.params;
+    const bedroomTypes = await House.find({ bedroomType });
     return successResMsg(res, 200, {
       message: "success",
-      bedroomType,
+      bedroomTypes,
     });
   } catch (error) {
     return errorResMsg(res, 500, { message: error.message });

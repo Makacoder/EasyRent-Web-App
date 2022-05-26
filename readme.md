@@ -30,7 +30,7 @@ We strongly value excellence in terms of apartment search, navigation and user e
 
 ### Heroku Documentation
 
-https://murmuring-caverns-19178.herokuapp.com/
+https://eazy-rent.herokuapp.com/
 
 #### Developer Documentation
 
