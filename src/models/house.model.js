@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-
 const House = mongoose.Schema;
-
 const HouseSchema = new House(
   {
     location: {

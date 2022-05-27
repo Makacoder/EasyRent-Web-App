@@ -7,14 +7,16 @@ require("dotenv").config();
 //creating data for houses
 exports.addHouse = async (req, res, next) => {
   try {
-    const { location, category, price, bedroomType } = req.body;
-    const filename = req.file;
-    if (!location || !filename || !category || !price) {
-      return next(new AppError("Please fill the required field", 401));
+    const { location, category, price, bedroomType, houseImage } = req.body;
+    // const filename = req.file;
+    if (!location || !houseImage || !category || !price || bedroomType) {
+      return res.status(401).json({
+        msg: "Please Fill in the required fields",
+      });
     }
     const newHouse = await House.create({
       location,
-      houseImage: filename,
+      houseImage,
       category,
       price,
       bedroomType,
