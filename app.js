@@ -56,12 +56,6 @@ app.use(
   })
 );
 
-// app.get("/", (req, res) => {
-//   res.send({
-//     message: "You're a Badass Developer",
-//   });
-// });
-
 // initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
