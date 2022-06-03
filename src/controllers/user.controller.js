@@ -8,7 +8,7 @@ const {
   validateLogin,
 } = require("../middleware/validation.middleware");
 
-const { rent_Token } = process.env;
+const rent_Token = process.env.rent_Token;
 
 // New users sign up on the platform
 exports.register = async (req, res, next) => {
@@ -44,11 +44,16 @@ exports.register = async (req, res, next) => {
       role: newUser.role,
     };
     const token = await jwt.sign(payload, process.env.rent_Token, {
-      expiresIn: "5h",
+      expiresIn: "2h",
     });
-
-    await newUser.save();
+    let mailOptions = {
+      to: newUser.email,
+      subject: "Verify Email",
+      text: `Hi ${firstName}, Please verify your email ${token}`,
+    };
+    await sendMail(mailOptions);
     return res.status(201).json({
+      message: `Hi ${firstName.toUpperCase()}, Your accout has been created successfully. Please check your mail for verification link.`,
       newUser,
       token,
     });
@@ -84,7 +89,7 @@ exports.login = async (req, res, next) => {
       email: emailExist.email,
       role: emailExist.role,
     };
-    const token = await jwt.sign(data, rent_Token, { expiresIn: "5h" });
+    const token = await jwt.sign(data, rent_Token, { expiresIn: "2h" });
 
     return res.status(200).json({
       success: true,
@@ -157,7 +162,7 @@ exports.resendVerificationMail = async (req, res, next) => {
     console.log(data);
     // getting a secret token when login is successful.
     const secret_key = process.env.rent_Token;
-    const token = await jwt.sign(data, secret_key, { expiresIn: "900s" });
+    const token = await jwt.sign(data, secret_key, { expiresIn: "2h" });
     let mailOptions = {
       to: emailExists.email,
       subject: "Verify Email",
@@ -191,7 +196,7 @@ exports.forgetPasswordLink = async (req, res, next) => {
     };
     // getting a secret token
     const secret_key = process.env.rent_Token;
-    const token = await jwt.sign(data, secret_key, { expiresIn: "900s" });
+    const token = await jwt.sign(data, secret_key, { expiresIn: "2h" });
     let mailOptions = {
       to: userEmail.email,
       subject: "Reset Password",
@@ -248,55 +253,95 @@ exports.updatePassword = async (req, res, next) => {
   try {
     const { oldPassword, newPassword, confirmPassword } = req.body;
     const { email } = req.query;
-
+    const loggedUser = await User.findOne({ email });
     const headerTokenEmail = await jwt.verify(
       req.headers.authorization.split(" ")[1],
       process.env.rent_Token
     ).email;
-
-    const loggedUser = await User.findOne({ email });
-    console.log(loggedUser.password);
-    console.log("this is " + oldPassword);
-    if (!loggedUser) {
-      return res.status(403).json({
-        message: `Forbidden`,
-      });
-    }
     if (headerTokenEmail !== loggedUser.email) {
-      return res.status(403).json({
-        message: `Forbidden`,
-      });
     }
     const passwordMatch = await bcrypt.compare(
       oldPassword,
-      loggedUser[0][0].password
+      loggedUser.password
     );
-
+    // console.log(passwordMatch);
     if (!passwordMatch) {
       return res.status(400).json({
-        message: "old Password is not correct.",
+        message: `password is  not same as old password`,
       });
     }
-
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({
+      return res.status(409).json({
         message: "Password do not match.",
       });
     }
-
     const hashPassword = await bcrypt.hash(confirmPassword, 10);
-    console.log(confirmPassword);
-    await User.updateOne({ email }, { password: hashPassword });
+    const resetPassword = await User.updateOne(
+      { email },
+      { password: hashPassword }
+    );
     return res.status(200).json({
       message: `Password has been updated successfully.`,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     return res.status(500).json({
-      message: `${error.message}, Please Try agin later.`,
+      message: `${error.message}, Please Try again later.`,
     });
   }
 };
+// exports.updatePassword = async (req, res, next) => {
+//   try {
+//     const { oldPassword, newPassword, confirmPassword } = req.body;
+//     const { email } = req.query;
+//     const loggedUser = await User.findOne({ email });
+//     const headerTokenEmail = await jwt.verify(
+//       req.headers.authorization.split(" ")[1],
+//       process.env.rent_Token
+//     ).email;
+
+//     console.log(loggedUser.password);
+//     console.log("this is " + oldPassword);
+//     if (!loggedUser) {
+//       return res.status(403).json({
+//         message: `Forbidden`,
+//       });
+//     }
+//     if (headerTokenEmail !== loggedUser.email) {
+//       return res.status(403).json({
+//         message: `Forbidden`,
+//       });
+//     }
+//     const passwordMatch = await bcrypt.compare(
+//       oldPassword,
+//       loggedUser.password
+//     );
+
+//     if (!passwordMatch) {
+//       return res.status(400).json({
+//         message: "old Password is not correct.",
+//       });
+//     }
+
+//     if (newPassword !== confirmPassword) {
+//       return res.status(400).json({
+//         message: "Password do not match.",
+//       });
+//     }
+
+//     const hashPassword = await bcrypt.hash(confirmPassword, 10);
+//     console.log(confirmPassword);
+//     await User.updateOne({ email }, { password: hashPassword });
+//     return res.status(200).json({
+//       message: `Password has been updated successfully.`,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       message: `${error.message}, Please Try agin later.`,
+//     });
+//   }
+// };
 // exports.changePassword = async (req, res, next) => {
 //   try {
 //     const { oldPassword, newPassword, confirmPassword } = req.body;

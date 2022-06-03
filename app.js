@@ -37,7 +37,7 @@ connectDB();
 // baseurl for easyrent
 app.get("/", (req, res) => {
   res.send(
-    `<br><br> <h1></h1>How Are You Today? Welcome to EasyRent!</h2><br><br> 
+    `<br><br> <h1></h1>Welcome to EasyRent! How Are You Today?</h2><br><br> 
     <button><a href='/auth'>You Can Login With Google Here!</a></button> `
   );
 });

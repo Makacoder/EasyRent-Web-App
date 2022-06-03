@@ -1,27 +1,25 @@
-/** @format */
-
 const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth2").Strategy;
-const dotenv = require("dotenv");
-dotenv.config();
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-passport.deserializeUser(function (user, done) {
-  done(null, user);
+const googleStrategy = require("passport-google-oauth20").Strategy;
+const keys = require("../utils/keys");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv").config();
+passport.serializeUser(async (user, done) => {
+  done(null, user.id);
 });
 
+passport.deserializeUser((id, done) => {
+
+
+});
 passport.use(
-  new GoogleStrategy(
+  new googleStrategy(
     {
-      clientID: process.env.CLIENT_ID, 
+      clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:4000/auth/callback",
-      passReqToCallback: true,
+      callbackURI: "/auth/google/redirect",
     },
-    function (request, accessToken, refreshToken, profile, done) {
-      return done(null, profile);
-    }
+    async (accessToken, refreshToken, profile, done) => {
+        done(null);
+      }
   )
 );
