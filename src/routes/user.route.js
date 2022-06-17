@@ -19,4 +19,7 @@ router.post("/auth/user/resend-verification-mail", User.resendVerificationMail);
 router.post("/auth/user/password-reset-url", User.forgetPasswordLink);
 router.patch("/auth/user/update-password", User.updatePassword);
 router.patch("/auth/user/reset-password", User.resetPassword);
+router.delete("/deleteHouse/:_id", User.deleteHouse);
+router.patch("/auth/user/edit-profile/:_id", User.editUser);
+//router.get("/auth/user/fetch-userDetails", User.loggdUserDetails);
 module.exports = router;

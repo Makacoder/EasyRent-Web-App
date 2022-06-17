@@ -11,22 +11,69 @@ const {
 const rent_Token = process.env.rent_Token;
 
 // New users sign up on the platform
+// exports.register = async (req, res, next) => {
+//   try {
+//     const { firstName, lastName, phoneNumber, email, password, role } =
+//       req.body;
+//     await validateRegister.validateAsync(req.body);
+//     if (!firstName || !lastName || !phoneNumber || !email || !password) {
+//       return res.status(401).json({
+//         message: "kindly fill the required field",
+//       });
+//     }
+//     const emailExists = await User.findOne({ email });
+//     if (emailExists) {
+//       return res.status(401).json({
+//         message: "email already exists, Please login",
+//       });
+//     }
+//     const hashPassword = await bcrypt.hash(password, 10);
+//     const newUser = new User({
+//       firstName,
+//       lastName,
+//       phoneNumber,
+//       email,
+//       password: hashPassword,
+//       role,
+//     });
+//     const payload = {
+//       id: newUser.id,
+//       email: newUser.email,
+//       role: newUser.role,
+//     };
+//     const token = await jwt.sign(payload, process.env.rent_Token, {
+//       expiresIn: "2h",
+//     });
+//     let mailOptions = {
+//       to: newUser.email,
+//       subject: "Verify Email",
+//       text: `Hi ${firstName}, Please verify your email ${token}`,
+//     };
+//     //  await sendMail(mailOptions);
+//     return res.status(201).json({
+//       // message: `Hi ${firstName.toUpperCase()}, Your accout has been created successfully. Please check your mail for verification link.`,
+//       //newUser,
+//       token,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message,
+//     });
+//   }
+// };
 exports.register = async (req, res, next) => {
   try {
-    const { firstName, lastName, phoneNumber, email, password, role } =
-      req.body;
-    await validateRegister.validateAsync(req.body);
+    const { firstName, lastName, phoneNumber, email, password } = req.body;
+
     if (!firstName || !lastName || !phoneNumber || !email || !password) {
       return res.status(401).json({
-        success: false,
         message: "kindly fill the required field",
       });
     }
     const emailExists = await User.findOne({ email });
     if (emailExists) {
       return res.status(401).json({
-        success: false,
-        message: "email already exists, Please login",
+        message: "email already exists,Please login",
       });
     }
     const hashPassword = await bcrypt.hash(password, 10);
@@ -36,24 +83,18 @@ exports.register = async (req, res, next) => {
       phoneNumber,
       email,
       password: hashPassword,
-      role,
     });
     const payload = {
       id: newUser.id,
       email: newUser.email,
-      role: newUser.role,
     };
     const token = await jwt.sign(payload, process.env.rent_Token, {
       expiresIn: "2h",
     });
-    let mailOptions = {
-      to: newUser.email,
-      subject: "Verify Email",
-      text: `Hi ${firstName}, Please verify your email ${token}`,
-    };
-    await sendMail(mailOptions);
+
+    await newUser.save();
     return res.status(201).json({
-      message: `Hi ${firstName.toUpperCase()}, Your accout has been created successfully. Please check your mail for verification link.`,
+      message: `Hi ${firstName.toUpperCase()}, Welcome to EasyRent, your account is created, Please proceed to sign-in`,
       newUser,
       token,
     });
@@ -72,15 +113,13 @@ exports.login = async (req, res, next) => {
     const emailExist = await User.findOne({ email });
     if (!emailExist) {
       return res.status(401).json({
-        success: false,
-        message: "Email doens't exist, please create account",
+        message: "Email doesn't exist, please create account",
       });
     }
     const isPasswordExist = await bcrypt.compare(password, emailExist.password);
     console.log(isPasswordExist);
     if (!isPasswordExist) {
       return res.status(401).json({
-        success: false,
         message: "password does not exist",
       });
     }
@@ -92,8 +131,7 @@ exports.login = async (req, res, next) => {
     const token = await jwt.sign(data, rent_Token, { expiresIn: "2h" });
 
     return res.status(200).json({
-      success: true,
-      message: "login successful",
+      message: `You are now logged-in, Please browse our list of apartments for rent or Post a new house`,
       token,
     });
   } catch (error) {
@@ -300,4 +338,54 @@ exports.logout = (req, res) => {
   return res.status(200).json({
     message: `User logged out successfully.`,
   });
+};
+// Deleting House on the platform
+exports.deleteHouse = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const deleteHouse = await User.findOneAndDelete({ _id });
+    return res.status(200).json({
+      message: `This House has been deleted successfully`,
+      deleteHouse,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `You need to signin before you can perform this task`,
+    });
+  }
+};
+//endpoint to edit and update users profile/properties
+exports.editUser = async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const userUpdate = await User.findByIdAndUpdate({ _id }, req.body, {
+      new: true,
+    });
+    if (!userUpdate) {
+      return res.status(404).json({
+        message: "Great! Your details have been updated successfully",
+      });
+    }
+    return res.status(200).json({
+      userUpdate,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `You need to signin before you can perform this task`,
+    });
+  }
+};
+exports.fetchloggedUserDetails = async (req, res, next) => {
+  try {
+    // const filename = req.file;
+    const loggedUserDetails = await User.find();
+    return successResMsg(res, 200, {
+      message: "User details appear successfully",
+      loggedUserDetails,
+    });
+  } catch (error) {
+    return errorResMsg(res, 500, { message: error.message });
+  }
 };

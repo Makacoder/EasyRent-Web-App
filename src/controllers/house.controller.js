@@ -1,5 +1,6 @@
 const House = require("../models/house.model");
 const cloudinaryUploadMethod = require("../utils/cloudinary");
+const path = require("path");
 const { successResMsg, errorResMsg } = require("../utils/appResponse");
 const AppError = require("../utils/appError");
 require("dotenv").config();
@@ -7,25 +8,72 @@ require("dotenv").config();
 //creating data for houses
 exports.addHouse = async (req, res, next) => {
   try {
-    const { location, category, price, bedroomType, houseImage } = req.body;
-    // const filename = req.file;
-    if (!location || !houseImage || !category || !price || bedroomType) {
+    const {
+      address,
+      city,
+      state,
+      description,
+      isItFurnished,
+      propertyType,
+      bedroom,
+      bathroom,
+      toilet,
+      amenities,
+      price,
+      negotiable,
+      photos,
+    } = req.body;
+
+    if (
+      !address ||
+      !city ||
+      !state ||
+      !description ||
+      !isItFurnished ||
+      !propertyType ||
+      !bedroom ||
+      !bathroom ||
+      !toilet ||
+      !amenities ||
+      !price ||
+      !negotiable
+    ) {
       return res.status(401).json({
         msg: "Please Fill in the required fields",
       });
     }
-    const newHouse = await House.create({
-      location,
-      houseImage,
-      category,
+    const urls = [];
+    const files = req.files;
+    if (!files) return next(new AppError("No picture attached..", 400));
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await cloudinaryUploadMethod(path);
+
+      urls.push(newPath);
+    }
+    photos = urls.map((url) => url.res);
+    let newHouse = await House.create({
+      address,
+      city,
+      state,
+      description,
+      isItFurnished,
+      propertyType,
+      bedroom,
+      bathroom,
+      toilet,
+      amenities,
       price,
-      bedroomType,
+      negotiable,
+      photos,
+      //user: req.user.id,
     });
     return successResMsg(res, 201, {
       message: "House added successfully",
       newHouse,
     });
   } catch (error) {
+    console.log(error);
     return errorResMsg(res, 500, { message: error.message });
   }
 };
@@ -114,6 +162,32 @@ exports.addhouseimage = async (req, res, next) => {
       urls.push(newPath);
     }
     images = urls.map((url) => url.res);
+  } catch (error) {
+    return errorResMsg(res, 500, { message: error.message });
+  }
+};
+
+exports.fetchBookmarkList = async (req, res, next) => {
+  try {
+    // const filename = req.file;
+    const bookmarkList = await House.find();
+    return successResMsg(res, 200, {
+      message: "Bookmark listed successfully",
+      bookmarkList,
+    });
+  } catch (error) {
+    return errorResMsg(res, 500, { message: error.message });
+  }
+};
+
+exports.fetchPropertyDetails = async (req, res, next) => {
+  try {
+    // const filename = req.file;
+    const propertyDetails = await House.find();
+    return successResMsg(res, 200, {
+      message: "Property displayed successfully",
+      propertyDetails,
+    });
   } catch (error) {
     return errorResMsg(res, 500, { message: error.message });
   }
