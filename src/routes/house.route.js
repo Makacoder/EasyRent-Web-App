@@ -12,7 +12,7 @@ router.post(
   House.addHouse
   // upload.single("aptImage"),
 );
-router.post("/addhouse", upload.array("pictures"), House.addHouse);
+router.post("/addhouse", upload.any("photos"), House.addHouse);
 router.patch("/updateHouse", House.updateHouseInfo);
 router.get("/searchHouse", House.searchForHouse);
 router.get("/view-category/:category", House.viewCategory);

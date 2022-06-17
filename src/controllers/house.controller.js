@@ -8,7 +8,7 @@ require("dotenv").config();
 //creating data for houses
 exports.addHouse = async (req, res, next) => {
   try {
-    const {
+    let {
       address,
       city,
       state,
@@ -36,18 +36,19 @@ exports.addHouse = async (req, res, next) => {
       !toilet ||
       !amenities ||
       !price ||
-      !negotiable
+      !negotiable ||
+      !photos
     ) {
       return res.status(401).json({
-        msg: "Please Fill in the required fields",
+        message: "Please Fill in the required fields",
       });
     }
-    const urls = [];
-    const files = req.files;
+    let urls = [];
+    let files = req.files;
     if (!files) return next(new AppError("No picture attached..", 400));
-    for (const file of files) {
-      const { path } = file;
-      const newPath = await cloudinaryUploadMethod(path);
+    for (let file of files) {
+      let { path } = file;
+      let newPath = await cloudinaryUploadMethod(path);
 
       urls.push(newPath);
     }
