@@ -21,5 +21,6 @@ router.patch("/auth/user/update-password", User.updatePassword);
 router.patch("/auth/user/reset-password", User.resetPassword);
 router.delete("/deleteHouse/:_id", User.deleteHouse);
 router.patch("/auth/user/edit-profile/:_id", User.editUser);
-//router.get("/auth/user/fetch-userDetails", User.loggdUserDetails);
+router.get("/auth/user/fetch-userDetails", User.fetchloggedUserDetails);
+
 module.exports = router;

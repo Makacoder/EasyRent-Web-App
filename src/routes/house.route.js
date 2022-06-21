@@ -18,5 +18,8 @@ router.get("/searchHouse", House.searchForHouse);
 router.get("/view-category/:category", House.viewCategory);
 router.get("/viewHouse", House.fetchHouse);
 router.get("/bedroomType/:bedroom", House.viewBedroomType);
+router.get("/view-propertyDetails", House.fetchPropertyDetails);
+router.get("/view-bookmarkList", House.fetchBookmarkList);
+
 
 module.exports = router;

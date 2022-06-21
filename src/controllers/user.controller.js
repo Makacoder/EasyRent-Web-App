@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/sendMail");
+const { errorResMsg, successResMsg } = require("../utils/appResponse");
 require("dotenv").config();
 const {
   validateRegister,
@@ -152,7 +153,7 @@ exports.fetchAllUsers = async (req, res, next) => {
     });
   } catch (error) {
     return res.status(500).json({
-      success: false,
+      
       message: error.message,
     });
   }
@@ -247,7 +248,7 @@ exports.forgetPasswordLink = async (req, res, next) => {
     });
   } catch (error) {
     return res.status(500).json({
-      success: false,
+      
       message: `${error.message}, Try again later.`,
     });
   }
@@ -350,7 +351,7 @@ exports.deleteHouse = async (req, res, next) => {
     });
   } catch (error) {
     return res.status(500).json({
-      success: false,
+      
       message: `You need to signin before you can perform this task`,
     });
   }
@@ -372,14 +373,14 @@ exports.editUser = async (req, res, next) => {
     });
   } catch (error) {
     return res.status(500).json({
-      success: false,
+      
       message: `You need to signin before you can perform this task`,
     });
   }
 };
 exports.fetchloggedUserDetails = async (req, res, next) => {
   try {
-    // const filename = req.file;
+    
     const loggedUserDetails = await User.find();
     return successResMsg(res, 200, {
       message: "User details appear successfully",

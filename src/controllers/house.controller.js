@@ -5,7 +5,7 @@ const { successResMsg, errorResMsg } = require("../utils/appResponse");
 const AppError = require("../utils/appError");
 require("dotenv").config();
 
-//creating data for houses
+//creating data to post houses
 exports.addHouse = async (req, res, next) => {
   try {
     let {
@@ -170,7 +170,7 @@ exports.addhouseimage = async (req, res, next) => {
 
 exports.fetchBookmarkList = async (req, res, next) => {
   try {
-    // const filename = req.file;
+    
     const bookmarkList = await House.find();
     return successResMsg(res, 200, {
       message: "Bookmark listed successfully",
@@ -183,7 +183,7 @@ exports.fetchBookmarkList = async (req, res, next) => {
 
 exports.fetchPropertyDetails = async (req, res, next) => {
   try {
-    // const filename = req.file;
+    
     const propertyDetails = await House.find();
     return successResMsg(res, 200, {
       message: "Property displayed successfully",
