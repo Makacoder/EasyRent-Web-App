@@ -58,7 +58,7 @@ const HouseSchema = new House(
       required: true,
     },
     isItFurnished: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     propertyType: {

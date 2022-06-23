@@ -45,7 +45,7 @@ exports.addHouse = async (req, res, next) => {
     // }
     // console.log(req.body);
     console.log(req.files);
-    newFIles = req.files.map((item, index) => {
+    newFiles = req.files.map((item, index) => {
       req.body.photos.map((des, i) => {
         if (index === i) {
           item.description = des.description;
