@@ -1,13 +1,13 @@
-const User = require('../models/user.model');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { sendMail } = require('../utils/sendMail');
-const { errorResMsg, successResMsg } = require('../utils/appResponse');
-require('dotenv').config();
+const User = require("../models/user.model");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { sendMail } = require("../utils/sendMail");
+const { errorResMsg, successResMsg } = require("../utils/appResponse");
+require("dotenv").config();
 const {
   validateRegister,
   validateLogin,
-} = require('../middleware/validation.middleware');
+} = require("../middleware/validation.middleware");
 
 const rent_Token = process.env.rent_Token;
 
@@ -68,13 +68,13 @@ exports.register = async (req, res, next) => {
 
     if (!firstName || !lastName || !phoneNumber || !email || !password) {
       return res.status(401).json({
-        message: 'kindly fill the required field',
+        message: "kindly fill the required field",
       });
     }
     const emailExists = await User.findOne({ email });
     if (emailExists) {
       return res.status(401).json({
-        message: 'email already exists,Please login',
+        message: "email already exists,Please login",
       });
     }
     const hashPassword = await bcrypt.hash(password, 10);
@@ -90,7 +90,7 @@ exports.register = async (req, res, next) => {
       email: newUser.email,
     };
     const token = await jwt.sign(payload, process.env.rent_Token, {
-      expiresIn: '2h',
+      expiresIn: "2h",
     });
 
     await newUser.save();
@@ -121,7 +121,7 @@ exports.login = async (req, res, next) => {
     console.log(isPasswordExist);
     if (!isPasswordExist) {
       return res.status(401).json({
-        message: 'password does not exist',
+        message: "password does not exist",
       });
     }
     const data = {
@@ -129,7 +129,7 @@ exports.login = async (req, res, next) => {
       email: emailExist.email,
       role: emailExist.role,
     };
-    const token = await jwt.sign(data, rent_Token, { expiresIn: '2h' });
+    const token = await jwt.sign(data, rent_Token, { expiresIn: "2h" });
 
     return res.status(200).json({
       message: `You are now logged-in, Please browse our list of apartments for rent or Post a new house`,
@@ -164,11 +164,11 @@ exports.verifyEmail = async (req, res, next) => {
     const secret_key = process.env.rent_Token;
     const decodedToken = await jwt.verify(token, secret_key);
     const user = await User.findOne({ email: decodedToken.email }).select(
-      'isVerified'
+      "isVerified"
     );
     if (user.isVerified) {
       return res.status(400).json({
-        message: 'user verified already',
+        message: "user verified already",
       });
     }
     user.isVerified = true;
@@ -190,7 +190,7 @@ exports.resendVerificationMail = async (req, res, next) => {
     const emailExists = await User.findOne({ email });
     if (!emailExists) {
       return res.status(400).json({
-        message: '  This email does not exist, pls sign up.',
+        message: "  This email does not exist, pls sign up.",
       });
     }
     const data = {
@@ -200,10 +200,10 @@ exports.resendVerificationMail = async (req, res, next) => {
     console.log(data);
     // getting a secret token when login is successful.
     const secret_key = process.env.rent_Token;
-    const token = await jwt.sign(data, secret_key, { expiresIn: '2h' });
+    const token = await jwt.sign(data, secret_key, { expiresIn: "2h" });
     let mailOptions = {
       to: emailExists.email,
-      subject: 'Verify Email',
+      subject: "Verify Email",
       text: `Hi ${emailExists.firstName}, Pls verify your account with the link below.`,
     };
     await sendMail(mailOptions);
@@ -234,10 +234,10 @@ exports.forgetPasswordLink = async (req, res, next) => {
     };
     // getting a secret token
     const secret_key = process.env.rent_Token;
-    const token = await jwt.sign(data, secret_key, { expiresIn: '2h' });
+    const token = await jwt.sign(data, secret_key, { expiresIn: "2h" });
     let mailOptions = {
       to: userEmail.email,
-      subject: 'Reset Password',
+      subject: "Reset Password",
       text: `Hi ${userEmail.firstName}, Reset your password with the link below. Your reset token is ${token}`,
     };
     await sendMail(mailOptions);
@@ -292,7 +292,7 @@ exports.updatePassword = async (req, res, next) => {
     const { email } = req.query;
     const loggedUser = await User.findOne({ email });
     const headerTokenEmail = await jwt.verify(
-      req.headers.authorization.split(' ')[1],
+      req.headers.authorization.split(" ")[1],
       process.env.rent_Token
     ).email;
     if (headerTokenEmail !== loggedUser.email) {
@@ -309,7 +309,7 @@ exports.updatePassword = async (req, res, next) => {
     }
     if (newPassword !== confirmPassword) {
       return res.status(409).json({
-        message: 'Password do not match.',
+        message: "Password do not match.",
       });
     }
     const hashPassword = await bcrypt.hash(confirmPassword, 10);
@@ -329,7 +329,7 @@ exports.updatePassword = async (req, res, next) => {
 };
 // Logout User
 exports.logout = (req, res) => {
-  res.cookie('jwt', 'logout', {
+  res.cookie("jwt", "logout", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
@@ -362,7 +362,7 @@ exports.editUser = async (req, res, next) => {
     });
     if (!userUpdate) {
       return res.status(404).json({
-        message: 'Great! Your details have been updated successfully',
+        message: "Great! Your details have been updated successfully",
       });
     }
     return res.status(200).json({
@@ -378,10 +378,10 @@ exports.fetchloggedUserDetails = async (req, res, next) => {
   try {
     console.log(req.user);
     const loggedUserDetails = await User.findById(req.user.id).select(
-      '-password'
+      "-password"
     );
     return successResMsg(res, 200, {
-      message: 'User details appear successfully',
+      message: "User details appear successfully",
       loggedUserDetails,
     });
   } catch (error) {

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const House = mongoose.Schema;
 const HouseSchema = new House(
   {
@@ -14,43 +14,43 @@ const HouseSchema = new House(
       type: String,
       required: true,
       enum: [
-        'Abuja',
-        'Lagos',
-        'Ogun',
-        'Osun',
-        'Ondo',
-        'Oyo',
-        'Kwara',
-        'Kogi',
-        'Niger',
-        'Kaduna',
-        'Kano',
-        'Katsina',
-        'Kebbi',
-        'Sokoto',
-        'Borno',
-        'Taraba',
-        'Adamawa',
-        'Yobe',
-        'Bauchi',
-        'Gombe',
-        'Plateau',
-        'Nassarawa',
-        'Jigawa',
-        'Ekiti',
-        'Edo',
-        'Delta',
-        'Rivers',
-        'Cross River',
-        'Enugu',
-        'Abia',
-        'Imo',
-        'Ebonyi',
-        'Akwa Ibom',
-        'Zamfara',
-        'Anambra',
-        'Bayelsa',
-        'Benue',
+        "Abuja",
+        "Lagos",
+        "Ogun",
+        "Osun",
+        "Ondo",
+        "Oyo",
+        "Kwara",
+        "Kogi",
+        "Niger",
+        "Kaduna",
+        "Kano",
+        "Katsina",
+        "Kebbi",
+        "Sokoto",
+        "Borno",
+        "Taraba",
+        "Adamawa",
+        "Yobe",
+        "Bauchi",
+        "Gombe",
+        "Plateau",
+        "Nassarawa",
+        "Jigawa",
+        "Ekiti",
+        "Edo",
+        "Delta",
+        "Rivers",
+        "Cross River",
+        "Enugu",
+        "Abia",
+        "Imo",
+        "Ebonyi",
+        "Akwa Ibom",
+        "Zamfara",
+        "Anambra",
+        "Bayelsa",
+        "Benue",
       ],
     },
     description: {
@@ -60,39 +60,41 @@ const HouseSchema = new House(
     isItFurnished: {
       type: String,
       required: true,
+      enum: ["Yes", "No"],
     },
     propertyType: {
       type: String,
       required: true,
       enum: [
-        'Self Contain',
-        'Mini Flats',
-        'Flat/Apartments',
-        'Semi Detached Bungalow',
-        'Semi Detached Duplex',
-        'Detached Bungalow',
-        'Terraced Duplex',
-        'Detached Duplex',
+        "Self Contain",
+        "Mini Flats",
+        "Flat/Apartments",
+        "Semi Detached Bungalow",
+        "Semi Detached Duplex",
+        "Detached Bungalow",
+        "Terraced Duplex",
+        "Detached Duplex",
       ],
     },
     bedroom: {
       type: String,
       required: true,
-      enum: ['1', '2', '3', '4', '5', '6', '7'],
+      enum: ["1", "2", "3", "4", "5", "6", "7"],
     },
     bathroom: {
       type: String,
       required: true,
-      enum: ['1', '2', '3', '4', '5', '6', '7'],
+      enum: ["1", "2", "3", "4", "5", "6", "7"],
     },
     toilet: {
       type: String,
       required: true,
-      enum: ['1', '2', '3', '4', '5', '6', '7'],
+      enum: ["1", "2", "3", "4", "5", "6", "7"],
     },
     amenities: [
       {
         type: String,
+        required: true,
       },
     ],
     price: {
@@ -102,7 +104,7 @@ const HouseSchema = new House(
     negotiable: {
       type: String,
       required: true,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
     },
     photos: [
       {
@@ -125,6 +127,6 @@ const HouseSchema = new House(
   { timestamps: true }
 );
 
-const HouseModel = mongoose.model('House', HouseSchema);
+const HouseModel = mongoose.model("House", HouseSchema);
 
 module.exports = HouseModel;
