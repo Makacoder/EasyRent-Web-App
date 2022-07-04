@@ -50,7 +50,9 @@ exports.register = async (req, res, next) => {
       
       You are one more step away from viewing a variety of properties. 
       
-      Please click the link below to verify your email and you will be redirected to the login page..... ${token}`,
+      Kindly click the link below to verify your registeration and you will be redirected to the login page..... 
+      
+      ${token}`,
     };
     await sendMail(mailOptions);
     return res.status(201).json({
