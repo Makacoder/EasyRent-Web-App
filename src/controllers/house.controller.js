@@ -5,6 +5,7 @@ const { successResMsg, errorResMsg } = require('../utils/appResponse');
 const AppError = require('../utils/appError');
 require('dotenv').config();
 
+
 //creating data to post houses
 exports.addHouse = async (req, res, next) => {
   try {
@@ -24,49 +25,22 @@ exports.addHouse = async (req, res, next) => {
       photos,
     } = req.body;
 
-    // if (
-    //   !address ||
-    //   !city ||
-    //   !state ||
-    //   !description ||
-    //   !isItFurnished ||
-    //   !propertyType ||
-    //   !bedroom ||
-    //   !bathroom ||
-    //   !toilet ||
-    //   !amenities ||
-    //   !price ||
-    //   !negotiable ||
-    //   !photos
-    // ) {
-    //   return res.status(401).json({
-    //     message: "Please Fill in the required fields",
-    //   });
-    // }
-    // console.log(req.body);
-    console.log(req.files);
-    newFiles = req.files.map((item, index) => {
-      req.body.photos.map((des, i) => {
-        if (index === i) {
-          item.description = des.description;
-        }
-        return item;
-      });
-    });
-    console.log(req.files);
+    const files = req.files;
     let urls = [];
-    let files = req.files;
-    if (!files) return next(new AppError('No picture attached..', 400));
-    for (let file of files) {
-      let { path } = file;
-      let newPath = await cloudinaryUploadMethod(path);
+    !files && res.status(400).json({ message: 'No picture attached!' });
+    for (file of files) {
+      const { path } = file;
+      console.log({ path });
 
-      urls.push({
-        url: newPath,
-        description: file.description,
-      });
+      const newPath = await cloudinaryUploadMethod(path);
+      console.log('=====new path');
+      console.log({ newPath });
+      urls.push(newPath);
     }
-    photos = urls.map((url) => url.res);
+    images = urls.map((url) => url.res);
+    console.log('==============images');
+    console.log(images);
+
     let newHouse = await House.create({
       address,
       city,
@@ -80,11 +54,11 @@ exports.addHouse = async (req, res, next) => {
       amenities,
       price,
       negotiable,
+      photos: images,
       urls,
-      //user: req.user.id,
     });
     return successResMsg(res, 201, {
-      message: 'House added successfully',
+      message: 'House posted successfully',
       newHouse,
     });
   } catch (error) {
@@ -92,6 +66,7 @@ exports.addHouse = async (req, res, next) => {
     return errorResMsg(res, 500, { message: error.message });
   }
 };
+
 
 // update house
 exports.updateHouseInfo = async (req, res, next) => {

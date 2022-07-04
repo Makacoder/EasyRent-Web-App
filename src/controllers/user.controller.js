@@ -11,61 +11,11 @@ const {
 
 const rent_Token = process.env.rent_Token;
 
-// New users sign up on the platform
-// exports.register = async (req, res, next) => {
-//   try {
-//     const { firstName, lastName, phoneNumber, email, password, role } =
-//       req.body;
-//     await validateRegister.validateAsync(req.body);
-//     if (!firstName || !lastName || !phoneNumber || !email || !password) {
-//       return res.status(401).json({
-//         message: "kindly fill the required field",
-//       });
-//     }
-//     const emailExists = await User.findOne({ email });
-//     if (emailExists) {
-//       return res.status(401).json({
-//         message: "email already exists, Please login",
-//       });
-//     }
-//     const hashPassword = await bcrypt.hash(password, 10);
-//     const newUser = new User({
-//       firstName,
-//       lastName,
-//       phoneNumber,
-//       email,
-//       password: hashPassword,
-//       role,
-//     });
-//     const payload = {
-//       id: newUser.id,
-//       email: newUser.email,
-//       role: newUser.role,
-//     };
-//     const token = await jwt.sign(payload, process.env.rent_Token, {
-//       expiresIn: "2h",
-//     });
-//     let mailOptions = {
-//       to: newUser.email,
-//       subject: "Verify Email",
-//       text: `Hi ${firstName}, Please verify your email ${token}`,
-//     };
-//     //  await sendMail(mailOptions);
-//     return res.status(201).json({
-//       // message: `Hi ${firstName.toUpperCase()}, Your accout has been created successfully. Please check your mail for verification link.`,
-//       //newUser,
-//       token,
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// };
+//New users sign up on the platform
 exports.register = async (req, res, next) => {
   try {
     const { firstName, lastName, phoneNumber, email, password } = req.body;
-
+    await validateRegister.validateAsync(req.body);
     if (!firstName || !lastName || !phoneNumber || !email || !password) {
       return res.status(401).json({
         message: "kindly fill the required field",
@@ -74,7 +24,7 @@ exports.register = async (req, res, next) => {
     const emailExists = await User.findOne({ email });
     if (emailExists) {
       return res.status(401).json({
-        message: "email already exists,Please login",
+        message: "email already exists, Please login",
       });
     }
     const hashPassword = await bcrypt.hash(password, 10);
@@ -93,9 +43,18 @@ exports.register = async (req, res, next) => {
       expiresIn: "2h",
     });
 
-    await newUser.save();
+    const mailOptions = {
+      to: newUser.email,
+      subject: "EasyRent Sign-up Verification Link",
+      text: `Dear ${firstName.toUpperCase()},  Thank you for registering on the EasyRent platform.... 
+      
+      You are one more step away from viewing a variety of properties. 
+      
+      Please click the link below to verify your email and you will be redirected to the login page..... ${token}`,
+    };
+    await sendMail(mailOptions);
     return res.status(201).json({
-      message: `Hi ${firstName.toUpperCase()}, Welcome to EasyRent, your account is created, Please proceed to sign-in`,
+      message: `Hi ${firstName.toUpperCase()}, Your account is created but pending log-in access. Please check your registered email for verification link.`,
       newUser,
       token,
     });
@@ -128,6 +87,7 @@ exports.login = async (req, res, next) => {
       id: emailExist.id,
       email: emailExist.email,
       role: emailExist.role,
+      isVerified: emailExist.verified,
     };
     const token = await jwt.sign(data, rent_Token, { expiresIn: "2h" });
 
@@ -174,7 +134,7 @@ exports.verifyEmail = async (req, res, next) => {
     user.isVerified = true;
     user.save();
     return res.status(201).json({
-      message: `Hi ${decodedToken.firstName}, Your account has been verified, You can now proceed to login`,
+      message: `Hi ${decodedToken.firstName}, Your email has been verified successfully, You can now proceed to login`,
     });
   } catch (error) {
     console.log(error);
